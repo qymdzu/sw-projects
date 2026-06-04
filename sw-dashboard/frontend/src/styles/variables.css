@@ -1,0 +1,17 @@
+:root {
+  --sidebar-width: 220px;
+  --sidebar-collapsed-width: 64px;
+  --header-height: 50px;
+  --color-primary: #409eff;
+  --color-success: #67c23a;
+  --color-warning: #e6a23c;
+  --color-danger: #f56c6c;
+  --color-info: #909399;
+  --bg-dark: #1d1e1f;
+  --bg-sidebar: #191a1b;
+  --bg-content: #141414;
+  --bg-card: #1e1e1e;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --border-color: #333;
+}

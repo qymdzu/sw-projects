@@ -1,0 +1,88 @@
+# ===== Python 后端 =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 虚拟环境
+venv/
+.venv/
+env/
+ENV/
+
+# 分布式打包
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# 测试/覆盖率
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.cache
+coverage.xml
+*.cover
+
+# Jupyter
+.ipynb_checkpoints
+
+# ===== Node 前端 =====
+node_modules/
+.pnp
+.pnp.js
+
+# 构建产物
+dist/
+build/
+out/
+.vite/
+*.local
+
+# 日志（运行时生成，不入库）
+logs/
+*.log
+!deploy/**/*.log
+
+# 调试
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ===== 环境与密钥 =====
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets/
+
+# ===== 编辑器/IDE =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ===== 数据与缓存 =====
+data/
+*.db
+*.sqlite
+*.sqlite3
+.cache/
+storage/runtime/
+
+# ===== 项目特定 =====
+# 前端开发缓存
+.swc/
+.parcel-cache/
+
+# 后端运行时文件
+backend/var/
+backend/tmp/

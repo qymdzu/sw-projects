@@ -1,0 +1,41 @@
+# =============================================================================
+# docker-compose.yml — sw-dashboard 翠花集群管理面板
+# 单服务编排，仅为与 Dockerfile 保持一致性而保留
+# 生产环境以 systemd 直接部署为主
+# =============================================================================
+
+version: "3.9"
+
+services:
+  sw-dashboard:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    image: sw-dashboard:latest
+    container_name: sw-dashboard
+    restart: unless-stopped
+    ports:
+      - "8900:8900"
+    environment:
+      # Token 认证（务必修改为强密码）
+      - HERMES_DASHBOARD_TOKEN=${HERMES_DASHBOARD_TOKEN:-dev-token-123456}
+      # 路径配置（根据实际环境调整）
+      - AGENTS_WORKSPACE_PATH=${AGENTS_WORKSPACE_PATH:-/data/sw-agents-workspace}
+      - SKILLS_LIBRARY_PATH=${SKILLS_LIBRARY_PATH:-/data/sw-skills-library}
+      - PROJECTS_PATH=${PROJECTS_PATH:-/data/sw-projects}
+      - HERMES_HOME=${HERMES_HOME:-/data/.hermes}
+      - LOG_PATH=${LOG_PATH:-/data/logs}
+      - SKILLS_PATH=${SKILLS_PATH:-/data/.hermes/skills}
+    volumes:
+      # 数据持久化
+      - sw-dashboard-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8900/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  sw-dashboard-data:
+    driver: local
