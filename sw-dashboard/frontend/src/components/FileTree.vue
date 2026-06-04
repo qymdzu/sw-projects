@@ -18,7 +18,7 @@
         <el-icon v-else style="color: #409eff">
           <Document />
         </el-icon>
-        <span>{{ data.name || data.repo || '(未命名)' }}</span>
+        <span>{{ data.name ?? data.repo ?? '(未命名)' }}</span>
       </span>
     </template>
   </el-tree>

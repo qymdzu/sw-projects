@@ -37,6 +37,39 @@
       </span>
     </div>
 
+    <!-- 日志路径展示（Bug 1 修复） -->
+    <div v-if="logPath && logFiles.length > 0" class="log-path-info">
+      <el-icon style="vertical-align: middle; margin-right: 4px"><FolderOpened /></el-icon>
+      <span style="font-size: 12px; color: var(--text-secondary)">{{ logPath }}</span>
+      <span style="font-size: 12px; color: var(--text-secondary); margin-left: 8px">
+        · 共 {{ logFiles.length }} 个文件
+      </span>
+    </div>
+    <div v-else-if="logPath && logFiles.length === 0" class="log-path-warn">
+      <el-alert
+        title="日志目录为空"
+        type="warning"
+        :closable="false"
+        show-icon
+      >
+        <template #default>
+          目录 <code>{{ logPath }}</code> 存在但没有 .log 或 .gz 文件
+        </template>
+      </el-alert>
+    </div>
+    <div v-else class="log-path-warn">
+      <el-alert
+        title="日志目录不存在"
+        type="error"
+        :closable="false"
+        show-icon
+      >
+        <template #default>
+          当前配置的 LOG_DIR 路径无效，请检查 <code>backend/config.py</code> 中的 <code>_LOG_PATH</code> 配置
+        </template>
+      </el-alert>
+    </div>
+
     <!-- 暂停提示条 -->
     <div v-if="isPaused && !searchMode" class="pause-bar">
       <span>新日志已暂停 · </span>
@@ -87,6 +120,7 @@ import { Refresh, Search } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
 const logFiles = ref<any[]>([])
+const logPath = ref('')
 const selectedFile = ref('hermes.log')
 const logContent = ref('')
 const loading = ref(false)
@@ -205,11 +239,13 @@ async function loadLogFiles() {
     const res = await getLogFiles()
     const data = res.data?.data || res.data
     logFiles.value = data?.files || []
+    logPath.value = data?.log_path || ''  // Bug 1 修复：从响应填充 log_path
     if (data?.default_file) {
       selectedFile.value = data.default_file
     }
   } catch {
     logFiles.value = []
+    logPath.value = ''
   }
 }
 
