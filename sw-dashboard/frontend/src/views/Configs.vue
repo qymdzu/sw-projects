@@ -37,6 +37,14 @@
           </span>
         </template>
       </el-tab-pane>
+      <el-tab-pane label="MEMORY.md" name="MEMORY.md">
+        <template #label>
+          <span>
+            <el-icon><Notebook /></el-icon> MEMORY.md
+            <el-tag v-if="isDirty && activeTab === 'MEMORY.md'" size="small" type="danger" style="margin-left: 4px">未保存</el-tag>
+          </span>
+        </template>
+      </el-tab-pane>
       <el-tab-pane label="Cron 任务" name="cron">
         <template #label>
           <span>
@@ -113,7 +121,7 @@ import CodeEditor from '@/components/CodeEditor.vue'
 import StatusBadge from '@/components/StatusBadge.vue'
 import { showConfirm } from '@/components/ConfirmDialog'
 import { ElMessage } from 'element-plus'
-import { Setting, Key, Document, Timer } from '@element-plus/icons-vue'
+import { Setting, Key, Document, Timer, Notebook } from '@element-plus/icons-vue'
 
 const activeTab = ref('config.yaml')
 const currentConfig = ref<any>(null)

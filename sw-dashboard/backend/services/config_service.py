@@ -47,7 +47,7 @@ async def read_config(config_name: str) -> ConfigFile:
     Returns:
         ConfigFile 对象
     """
-    if config_name not in ["config.yaml", ".env", "CLAUDE.md", "SOUL.md"]:
+    if config_name not in ["config.yaml", ".env", "CLAUDE.md", "SOUL.md", "MEMORY.md"]:
         raise ConfigError(f"不支持的配置文件: {config_name}")
 
     config_path = AppConfig.get_config_file_path(config_name)
@@ -77,7 +77,7 @@ async def read_config(config_name: str) -> ConfigFile:
     # 设置语言
     if config_name == "config.yaml":
         language = "yaml"
-    elif config_name in ("CLAUDE.md", "SOUL.md"):
+    elif config_name in ("CLAUDE.md", "SOUL.md", "MEMORY.md"):
         language = "markdown"
 
     return ConfigFile(
@@ -150,7 +150,7 @@ async def write_config(
     Returns:
         FileWriteResponse
     """
-    if config_name not in ["config.yaml", ".env", "CLAUDE.md", "SOUL.md"]:
+    if config_name not in ["config.yaml", ".env", "CLAUDE.md", "SOUL.md", "MEMORY.md"]:
         raise ConfigError(f"不支持的配置文件: {config_name}")
 
     config_path = AppConfig.get_config_file_path(config_name)
@@ -226,7 +226,7 @@ def _validate_env_content(content: str) -> None:
 async def list_configs() -> List[ConfigListItem]:
     """获取配置文件列表（含 last_modified）"""
     configs = []
-    for name in ["config.yaml", ".env", "CLAUDE.md", "SOUL.md"]:
+    for name in ["config.yaml", ".env", "CLAUDE.md", "SOUL.md", "MEMORY.md"]:
         config_path = AppConfig.get_config_file_path(name)
         language = "yaml" if name == "config.yaml" else ("markdown" if name.endswith(".md") else "env")
         last_modified = None

@@ -47,6 +47,25 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # 访问日志中间件 — 记录到 hermes.log，Logs 页能 tail 到
+    from starlette.middleware.base import BaseHTTPMiddleware
+    from starlette.requests import Request
+    import logging
+    access_logger = logging.getLogger("sw_dashboard.access")
+
+    class AccessLogMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request: Request, call_next):
+            response = await call_next(request)
+            access_logger.info(
+                "%s %s -> %d",
+                request.method,
+                request.url.path,
+                response.status_code,
+            )
+            return response
+
+    app.add_middleware(AccessLogMiddleware)
+
     # 注册 API 路由
     app.include_router(dashboard_router.router)
     app.include_router(storage_router.router)
@@ -62,10 +81,38 @@ def create_app() -> FastAPI:
 
     @app.on_event("startup")
     async def startup():
-        """应用启动时创建必要目录"""
+        """应用启动时创建必要目录 + 装日志文件 handler"""
         # 确保 hermes home 目录存在（供配置编辑用）
         hermes_home = Path(AppConfig.base_paths.get("hermes", ""))
         hermes_home.mkdir(parents=True, exist_ok=True)
+
+        # 修复 2026-06-05：建 LOG_DIR 并把 INFO 日志镜像到 hermes.log，
+        # 让 Logs 页能 tail 到 dashboard 自身的运行日志。
+        log_dir = Path(AppConfig.LOG_DIR)
+        log_dir.mkdir(parents=True, exist_ok=True)
+        hermes_log = log_dir / "hermes.log"
+        if not hermes_log.exists():
+            hermes_log.touch()
+            with open(hermes_log, "w", encoding="utf-8") as f:
+                from datetime import datetime
+                f.write(
+                    f"# sw-dashboard cluster log\n"
+                    f"# 创建时间: {datetime.now().isoformat()}\n"
+                    f"# Hermes Gateway 实际日志请使用: journalctl -u hermes-gateway-software-dev\n"
+                    f"# --------------------------------------------------------\n\n"
+                )
+
+        import logging
+        log_handler = logging.FileHandler(str(hermes_log), encoding="utf-8")
+        log_handler.setLevel(logging.INFO)
+        log_handler.setFormatter(
+            logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+        )
+        logging.getLogger().addHandler(log_handler)
+        logging.getLogger("sw_dashboard").setLevel(logging.INFO)
+        logging.getLogger("sw_dashboard").info(
+            "sw-dashboard 启动完成，LOG_DIR=%s", log_dir
+        )
 
     return app
 

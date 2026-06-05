@@ -37,9 +37,12 @@ class AppConfig:
     skills_path: str = ""
     memory_path: str = ""
 
-    # dashboard 自身运行日志（不走 Hermes Gateway journal，走 systemd journal 读不到）
-    # 硬编码，不依赖 hermes_home 推断
-    LOG_DIR: str = "/home/ubuntu/.hermes/profiles/software-dev/var/log"
+    # dashboard 自身运行日志
+    # 修复 2026-06-05：之前路径 /home/ubuntu/.hermes/profiles/software-dev/var/log
+    # 不存在且 dashboard 没自动建，导致 Logs 页永远显示"日志目录不存在"。
+    # 改为 hermes home 下的 log/ 子目录（user-owned 目录 dashboard 可写），
+    # 启动时自动建。同时把 INFO 日志镜像到文件供 Logs 页 tail。
+    LOG_DIR: str = "/home/ubuntu/.hermes/profiles/software-dev/log"
 
     # 文件限制
     MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB 读取上限
@@ -157,6 +160,7 @@ class AppConfig:
             ".env": os.path.join(hermes_home, ".env"),
             "CLAUDE.md": os.path.join(hermes_home, "CLAUDE.md"),
             "SOUL.md": os.path.join(hermes_home, "SOUL.md"),
+            "MEMORY.md": AppConfig.memory_path,  # 2026-06-05 新增：实际在 memories/ 子目录
         }
         return config_map.get(config_name, "")
 
