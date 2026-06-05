@@ -27,6 +27,7 @@ from routers import storage as storage_router
 from routers import configs as configs_router
 from routers import logs as logs_router
 from routers import skills as skills_router
+from routers import memory as memory_router
 
 
 def create_app() -> FastAPI:
@@ -52,6 +53,7 @@ def create_app() -> FastAPI:
     app.include_router(configs_router.router)
     app.include_router(logs_router.router)
     app.include_router(skills_router.router)
+    app.include_router(memory_router.router)
 
     # 挂载前端静态文件（如果存在）
     frontend_dist = backend_dir.parent / "frontend" / "dist"
@@ -61,34 +63,7 @@ def create_app() -> FastAPI:
     @app.on_event("startup")
     async def startup():
         """应用启动时创建必要目录"""
-        log_dir = Path(AppConfig.LOG_DIR)
-        log_dir.mkdir(parents=True, exist_ok=True)
-
-        # 确保 hermes.log 存在（Hermes Gateway 走 systemd journal，
-        # 这里是 dashboard 自身的运行日志 + 集群事件记录，方便用户在面板里查看）
-        hermes_log = log_dir / "hermes.log"
-        if not hermes_log.exists():
-            hermes_log.touch()
-            # 写一行说明
-            with open(hermes_log, "w", encoding="utf-8") as f:
-                f.write(
-                    f"# sw-dashboard cluster log\n"
-                    f"# 创建时间: {__import__('datetime').datetime.now().isoformat()}\n"
-                    f"# Hermes Gateway 实际日志请使用: journalctl -u hermes-gateway-software-dev\n"
-                    f"# --------------------------------------------------------\n\n"
-                )
-
-        # 配置 logging 把 INFO 级别也写入 hermes.log
-        import logging
-        log_handler = logging.FileHandler(str(hermes_log), encoding="utf-8")
-        log_handler.setLevel(logging.INFO)
-        log_handler.setFormatter(
-            logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
-        )
-        logging.getLogger().addHandler(log_handler)
-        logging.getLogger("sw_dashboard").setLevel(logging.INFO)
-        logging.getLogger("sw_dashboard").info("sw-dashboard 启动完成，LOG_DIR=%s", log_dir)
-
+        # 确保 hermes home 目录存在（供配置编辑用）
         hermes_home = Path(AppConfig.base_paths.get("hermes", ""))
         hermes_home.mkdir(parents=True, exist_ok=True)
 

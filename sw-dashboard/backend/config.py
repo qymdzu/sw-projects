@@ -29,13 +29,17 @@ class AppConfig:
     _SKILLS_LIBRARY_PATH: str = "~/gitee-software/sw-skills-library"
     _PROJECTS_PATH: str = "~/gitee-software/sw-projects"
     _HERMES_HOME: str = "/home/ubuntu/.hermes/profiles/software-dev"
-    _LOG_PATH: str = "~/.hermes/hermes-agent/venv/var/log"
     _SKILLS_PATH: str = "~/.hermes/skills"
+    _MEMORY_PATH: str = "~/.hermes/profiles/software-dev/MEMORY.md"
 
     # 已展开的路径缓存
     base_paths: Dict[str, str] = {}
-    log_path: str = ""
     skills_path: str = ""
+    memory_path: str = ""
+
+    # dashboard 自身运行日志（不走 Hermes Gateway journal，走 systemd journal 读不到）
+    # 硬编码，不依赖 hermes_home 推断
+    LOG_DIR: str = "/home/ubuntu/.hermes/profiles/software-dev/var/log"
 
     # 文件限制
     MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB 读取上限
@@ -51,8 +55,7 @@ class AppConfig:
         ".svelte", ".tsx", ".jsx",
     ]
 
-    # 日志目录（从 HERMES_HOME 推断）
-    LOG_DIR: str = ""
+    # 日志目录
 
     _initialized: bool = False
 
@@ -96,21 +99,31 @@ class AppConfig:
         cls.TOKEN = token
 
         # --- 读取环境变量路径覆盖 ---
+        _real_user = os.environ.get("USER", "ubuntu")
+        _base_default = f"/home/{_real_user}/gitee-software"
+
         cls._AGENTS_WORKSPACE_PATH = os.environ.get(
-            "AGENTS_WORKSPACE_PATH", cls._AGENTS_WORKSPACE_PATH
+            "AGENTS_WORKSPACE_PATH", f"{_base_default}/sw-agents-workspace"
         )
         cls._SKILLS_LIBRARY_PATH = os.environ.get(
-            "SKILLS_LIBRARY_PATH", cls._SKILLS_LIBRARY_PATH
+            "SKILLS_LIBRARY_PATH", f"{_base_default}/sw-skills-library"
         )
         cls._PROJECTS_PATH = os.environ.get(
-            "PROJECTS_PATH", cls._PROJECTS_PATH
+            "PROJECTS_PATH", f"{_base_default}/sw-projects"
         )
         cls._HERMES_HOME = os.environ.get(
-            "HERMES_HOME", cls._HERMES_HOME
+            "HERMES_HOME", f"/home/{_real_user}/.hermes/profiles/software-dev"
+        )
+        cls._SKILLS_PATH = os.environ.get(
+            "SKILLS_PATH", f"/home/{_real_user}/.hermes/skills"
+        )
+        cls._MEMORY_PATH = os.environ.get(
+            "MEMORY_PATH", f"/home/{_real_user}/.hermes/profiles/software-dev/MEMORY.md"
         )
 
-        # --- 展开路径中的 ~ ---
-        hermes_home = str(Path(cls._HERMES_HOME).expanduser().resolve())
+        # --- 路径展开 ---
+        # 注意：hermes_home 是绝对路径，不用 expanduser
+        hermes_home = str(Path(cls._HERMES_HOME).resolve())
 
         cls.base_paths = {
             "workspace": str(Path(cls._AGENTS_WORKSPACE_PATH).expanduser().resolve()),
@@ -119,18 +132,19 @@ class AppConfig:
             "hermes": hermes_home,
         }
 
-        # 日志路径
-        log_path_env = os.environ.get("LOG_PATH", cls._LOG_PATH)
-        cls.log_path = str(Path(log_path_env).expanduser().resolve())
-
-        # 技能路径
-        skills_env = os.environ.get("SKILLS_PATH", cls._SKILLS_PATH)
+        # 技能路径：默认从 HERMES_HOME 推断（profile 内 skills 目录）
+        # 修复 2026-06-05：原来硬编码 ~/.hermes/skills 是 default profile 的，
+        # 当前 software-dev profile 跑，导致 skills 浏览整棵树为空。
+        # 优先 SKILLS_PATH 环境变量 → 否则 {HERMES_HOME}/skills。
+        _skills_default = str(Path(hermes_home) / "skills")
+        skills_env = os.environ.get("SKILLS_PATH", _skills_default)
         cls.skills_path = str(Path(skills_env).expanduser().resolve())
 
-        # 日志目录（从 hermes home 推断）
-        cls.LOG_DIR = str(
-            Path(hermes_home) / ".." / ".." / "hermes-agent" / "venv" / "var" / "log"
-        )
+        # 记忆路径：翠花的实际存储是 {HERMES_HOME}/memories/MEMORY.md
+        # 修复 2026-06-05：之前默认 {HERMES_HOME}/MEMORY.md，但实际文件在 memories/ 子目录。
+        _memory_default = str(Path(hermes_home) / "memories" / "MEMORY.md")
+        memory_env = os.environ.get("MEMORY_PATH", _memory_default)
+        cls.memory_path = str(Path(memory_env).expanduser().resolve())
 
         cls._initialized = True
 
@@ -150,8 +164,8 @@ class AppConfig:
     def get_safe_paths(cls) -> List[str]:
         """返回所有安全路径白名单"""
         return list(cls.base_paths.values()) + [
-            cls.log_path,
             cls.skills_path,
+            cls.memory_path,
             cls.LOG_DIR,
         ]
 

@@ -36,11 +36,11 @@ def get_base_paths() -> Dict[str, str]:
     return dict(AppConfig.base_paths)
 
 
-def get_log_path() -> str:
-    """获取日志目录路径"""
-    return AppConfig.log_path
-
-
 def get_skills_path() -> str:
     """获取技能目录路径"""
     return AppConfig.skills_path
+
+
+def get_memory_path() -> str:
+    """获取翠花记忆文件路径"""
+    return AppConfig.memory_path
