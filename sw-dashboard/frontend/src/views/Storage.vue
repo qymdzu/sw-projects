@@ -22,8 +22,7 @@
         <div class="tree-panel-body" v-loading="treeLoading">
           <FileTree
             :nodes="treeData"
-            :lazy="true"
-            :load-node="lazyLoadNode"
+            :lazy="false"
             @node-click="handleFileSelect"
           />
         </div>
@@ -114,15 +113,7 @@ function switchRepo(repo: string) {
   loadTree(repo)
 }
 
-function lazyLoadNode(node: any, resolve: (data: FileNode[]) => void) {
-  if (node.data.type !== 'directory') {
-    resolve([])
-    return
-  }
-  getTree(activeRepo.value, node.data.path)
-    .then(res => resolve(res.data?.data || res.data || []))
-    .catch(() => resolve([]))
-}
+// lazy 模式已禁用（后端一次返回完整树），保留空函数以防 FileTree 调用
 
 async function handleFileSelect(node: FileNode) {
   if (node.type !== 'file') return

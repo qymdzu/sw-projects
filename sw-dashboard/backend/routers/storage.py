@@ -35,11 +35,14 @@ async def get_storage_tree(
                 sub_path=path,
                 max_depth=max_depth,
             )
+            # 修复 2026-06-05：顶层虚拟节点的 path 改成 repo 名（短 key），
+            # 避免与内层 children 的绝对路径冲突导致 el-tree node-key 错乱
+            # （"workspace" 嵌套 8 层就是 node-key 重复引发的渲染错位）
             return {
                 "name": repo_name,  # 用于 el-tree 顶层 label
                 "repo": repo_name,
-                "path": base_path,
-                "type": "directory",  # 顶层 repo 节点视为目录
+                "path": f"/{repo_name}",  # 用相对路径，el-tree node-key 不冲突
+                "type": "directory",
                 "isLeaf": False,
                 "children": [n.model_dump() for n in nodes],
             }

@@ -16,8 +16,7 @@
         <div class="tree-panel-body" v-loading="treeLoading">
           <FileTree
             :nodes="skillTree"
-            :lazy="true"
-            :load-node="lazyLoadSkillNode"
+            :lazy="false"
             @node-click="handleSkillSelect"
           />
         </div>
@@ -98,15 +97,7 @@ async function loadSkillTree(path = '/') {
   }
 }
 
-function lazyLoadSkillNode(node: any, resolve: (data: FileNode[]) => void) {
-  if (node.data.type !== 'directory') {
-    resolve([])
-    return
-  }
-  getTree(node.data.path)
-    .then(res => resolve(res.data?.data || res.data || []))
-    .catch(() => resolve([]))
-}
+// lazy 已禁用（后端一次返回完整树）
 
 async function handleSkillSelect(node: FileNode) {
   if (node.type !== 'file') return
