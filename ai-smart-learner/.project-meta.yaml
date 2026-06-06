@@ -1,0 +1,52 @@
+project_name: "AI智能学习机"
+project_dir: "ai-smart-learner"
+project_type: "frontend-only"     # Flutter 移动端 app（iOS/iPadOS，将来可扩 Android）
+version: "0.1.0"
+created_at: "2026-06-06"
+pipeline_stages: [1, 2, 3, 4, 5, 6, 7, 8]
+# 通用开发原则（公子 2026-06-06 拍板）：架构一次性搭好 30 条全考虑，代码分批做
+architecture_full: 30              # Stage 3 架构设计覆盖的需求总数
+scope_v0_1: 14                    # v0.1 MVP 实际实现的 P0 条数（基础架构 5 + 学生最小闭环 9）
+scope_v0_1_fr: [FR-001, FR-002, FR-005, FR-006, FR-007, FR-008, FR-009, FR-013, FR-017, FR-026, FR-027, FR-028, FR-029, FR-030]
+scope_v0_2_fr: []                 # v0.2 待定
+scope_v0_3_fr: []                 # v0.3 待定
+target_platforms: [ios, ipados]   # 优先 iOS/iPadOS；架构预留 Android 扩展
+tech_stack:
+  framework: "Flutter"
+  language: "Dart"
+  min_ios: "15.0"                # 适配你儿子的设备
+  data_storage: "SQLite (本地)"
+  ai_service: "DeepSeek API (云)"
+  ocr_provider_default: "百度云 OCR 教育版 (去笔迹)"
+  ocr_provider_extensible: [baidu_edu, mathpix, apple_vision, tencent, alibaba, gpt4v, google_vision]
+  distribution: "Xcode 真机调试 / TestFlight（不上 App Store）"
+  development_host: "macOS + Xcode + Flutter SDK"
+user_modules:
+  - name: "学生"
+    workspace: "students"
+    input: "拍照（错题/漏题）"
+    ai_tasks: [OCR去笔迹, 变式题生成, 知识讲解, 知识图谱]
+  - name: "大人"
+    workspace: "adults"
+    input: "拍照（书/段落）"
+    ai_tasks: [摘要提取, 关键信息存证, 读书笔记生成, 笔记导出]
+data_isolation: "user_id + SQLite 视图隔离，学生/大人数据绝不串联"
+extensibility:
+  ocr: "OCRProvider 抽象层 + 路由配置（按题型/用户动态切换）"
+  ai: "AIProvider 抽象层（DeepSeek 为默认，可扩 GPT-4/Claude/通义）"
+  ui: "业务层与 UI 层解耦，将来扩 Android 改 UI 不动业务"
+notes: |
+  纯移动端 app，无独立后端。多用户架构：学生模块（错题/漏题/熔断调度）
+  + 大人模块（读书笔记）。两模块工作空间独立。所有业务逻辑、错题/漏题
+  生命周期、AI 调用、数据存储都在 app 内完成（调云 API）。架构分层：
+  UI 层 / 业务引擎层 / 数据层 / OCR 抽象层 / AI 抽象层。
+
+meta_goals:  # 公子 2026-06-06 拍板的元目标
+  1: "验证模型（翠花）开发软件的能力，实现软件开发集群的工程化开发能力"
+  2: "保证开发出的软件没有问题，真正可使用"
+  3: "验证 pipeline 管道在控制工程化开发软件方面是否存在问题，存在哪些问题，以便最后调整"
+  usage: |
+    本项目不仅是"做一个软件"，更是**反向验证工具**：
+    - 翠花带的开发过程 = 是否工程化的样板
+    - 最终软件质量 = 验证集群能不能交付可运行产品
+    - Pipeline 跑下来的问题 = 给集群调整提供数据
