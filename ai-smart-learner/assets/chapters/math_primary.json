@@ -1,0 +1,58 @@
+[
+  {
+    "id": "math-p-1",
+    "subject": "数学",
+    "stage": "primary",
+    "name": "数的认识",
+    "parent_id": null,
+    "display_order": 1
+  },
+  {
+    "id": "math-p-1-1",
+    "subject": "数学",
+    "stage": "primary",
+    "name": "10 以内加减",
+    "parent_id": "math-p-1",
+    "display_order": 1
+  },
+  {
+    "id": "math-p-1-2",
+    "subject": "数学",
+    "stage": "primary",
+    "name": "20 以内进位加",
+    "parent_id": "math-p-1",
+    "display_order": 2
+  },
+  {
+    "id": "math-p-2",
+    "subject": "数学",
+    "stage": "primary",
+    "name": "分数运算",
+    "parent_id": null,
+    "display_order": 2
+  },
+  {
+    "id": "math-p-2-1",
+    "subject": "数学",
+    "stage": "primary",
+    "name": "同分母加减",
+    "parent_id": "math-p-2",
+    "display_order": 1
+  },
+  {
+    "id": "math-p-2-2",
+    "subject": "数学",
+    "stage": "primary",
+    "name": "异分母加减",
+    "parent_id": "math-p-2",
+    "display_order": 2
+  },
+  {
+    "id": "math-p-3",
+    "subject": "数学",
+    "stage": "primary",
+    "name": "几何图形",
+    "parent_id": null,
+    "display_order": 3
+  }
+]

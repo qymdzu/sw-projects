@@ -1,0 +1,64 @@
+name: ai_smart_learner
+description: AI智能学习机 - 学生错题/漏题管理 + 大人读书笔记
+version: 0.1.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+  flutter: '>=3.24.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # 状态管理
+  flutter_riverpod: ^2.5.1
+
+  # 路由
+  go_router: ^14.0.0
+
+  # 数据
+  sqflite: ^2.3.3
+  path: ^1.9.0
+  path_provider: ^2.1.4
+  flutter_secure_storage: ^9.2.2
+
+  # HTTP
+  dio: ^5.7.0
+
+  # 图片
+  image_picker: ^1.1.2
+  image: ^4.2.0
+  flutter_image_compress: ^2.3.0
+
+  # 图表
+  fl_chart: ^0.69.0
+
+  # 通知
+  flutter_local_notifications: ^17.2.3
+  timezone: ^0.9.4
+
+  # YAML
+  yaml: ^3.1.2
+
+  # 工具
+  uuid: ^4.5.0
+  intl: ^0.19.0
+  logger: ^2.4.0
+  crypto: ^3.0.5
+  permission_handler: ^11.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/chapters/
+    - assets/prompts/
+    - assets/icons/
+    - assets/images/
