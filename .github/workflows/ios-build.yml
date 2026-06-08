@@ -1,0 +1,62 @@
+name: iOS Build — ai-smart-learner
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'ai-smart-learner/**'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'ai-smart-learner/**'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Build target (ios/macos)'
+        required: true
+        default: 'ios'
+        type: choice
+        options:
+          - ios
+          - macos
+
+jobs:
+  build:
+    name: Flutter Build iOS
+    runs-on: macos-latest
+
+    defaults:
+      run:
+        working-directory: ai-smart-learner
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.24.x
+          cache: true
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build iOS (no codesign)
+        run: flutter build ios --no-codesign --debug
+
+      - name: Build iOS release (no codesign)
+        if: github.ref == 'refs/heads/master'
+        run: flutter build ios --no-codesign --release
+
+      - name: Upload build artifacts
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release-build
+          path: ai-smart-learner/build/ios/
+          retention-days: 7
