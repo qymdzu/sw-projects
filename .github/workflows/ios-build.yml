@@ -9,6 +9,8 @@ on:
     branches: [master]
     paths:
       - 'ai-smart-learner/**'
+  schedule:
+    - cron: '0 8 * * *'   # 每天 UTC 8:00（北京时间 16:00）
   workflow_dispatch:
     inputs:
       target:
@@ -59,6 +61,4 @@ jobs:
         with:
           name: ios-release-build
           path: ai-smart-learner/build/ios/
-          retention-days: 7# GitHub Actions mirror sync test
-
-# trigger
+          retention-days: 7
