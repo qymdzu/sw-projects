@@ -60,3 +60,5 @@ jobs:
           name: ios-release-build
           path: ai-smart-learner/build/ios/
           retention-days: 7# GitHub Actions mirror sync test
+
+# trigger
