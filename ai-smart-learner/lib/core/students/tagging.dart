@@ -3,7 +3,7 @@
 import 'package:logger/logger.dart';
 
 import '../ai/ai_provider.dart';
-import '../ai/factory.dart';
+import '../ai/ai_factory.dart';
 import '../ai/prompts/tagging_prompt.dart';
 import '../data/models/error_question.dart';
 import '../data/repositories/ai_call_log_repository.dart';
