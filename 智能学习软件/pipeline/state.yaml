@@ -1,20 +1,40 @@
-pipeline_name: 智能学习软件
-pipeline_version: 2.2.0
-current_stage: project-init
-current_stage_id: project-init
-stage_number: 0
-total_stages: 9
-started_at: '2026-06-30T18:09:35.494101'
-completed_stages: []
-gates: {}
-retry_count: 0
-paused: false
-approval_pending: false
-approval_gate: null
-status: initialized
-metadata:
-  project_name: 智能学习软件
-  project_type: fullstack
-  description: AI驱动的智能学习平台
-  created_by: project_init
-  created_at: '2026-06-30T18:09:35.494113'
+project:
+  name: 智能学习软件
+  description: ''
+  started_at: '2026-06-30T18:17:25.313585+08:00'
+  current_stage_id: concept
+  completed_stages: []
+  stage_started_at: {}
+  stage_completed_at: {}
+  stage_errors: []
+approval:
+  concept_approved: false
+  design_approved: false
+  pseudocode_approved: false
+gates:
+  requirement_review: false
+  tech_recon_review: false
+  design_review: false
+  code_review: false
+  test_review: false
+  deploy_approval: false
+stage_blocked: ''
+pipeline_paused: false
+runner:
+  status: dispatching
+  current_stage: requirement-analysis
+  message: 调度 analyst 执行 需求分析
+  dispatch:
+    stage_id: requirement-analysis
+    agent: analyst
+    action: start
+    message_schema: null
+  last_updated: '2026-06-30T18:17:26.499890+08:00'
+  completed_stages:
+  - project-init
+stage:
+  status: pending
+  agent_result: null
+  completed_at: null
+artifacts: {}
+decisions: []

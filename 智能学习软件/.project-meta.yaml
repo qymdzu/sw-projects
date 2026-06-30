@@ -1,6 +1,6 @@
 project_name: "智能学习软件"
-project_type: "fullstack"
+project_type: "backend-only"
 version: "0.1.0"
 created_at: "2026-06-30"
 pipeline_version: "2.x"
-description: "AI驱动的智能学习平台"
+description: ""
