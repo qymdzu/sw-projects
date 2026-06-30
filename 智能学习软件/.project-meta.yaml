@@ -1,6 +1,0 @@
-# .project-meta.yaml
-project_name: "智能学习软件"
-project_type: "fullstack"
-version: "0.1.0"
-created_at: "2026-06-29"
-pipeline_stages: [1, 2, 3, 4, 5, 6, 7, 8]
