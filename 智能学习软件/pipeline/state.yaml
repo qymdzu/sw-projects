@@ -1,0 +1,20 @@
+pipeline_name: 智能学习软件
+pipeline_version: 2.2.0
+current_stage: project-init
+current_stage_id: project-init
+stage_number: 0
+total_stages: 9
+started_at: '2026-06-30T18:09:35.494101'
+completed_stages: []
+gates: {}
+retry_count: 0
+paused: false
+approval_pending: false
+approval_gate: null
+status: initialized
+metadata:
+  project_name: 智能学习软件
+  project_type: fullstack
+  description: AI驱动的智能学习平台
+  created_by: project_init
+  created_at: '2026-06-30T18:09:35.494113'
