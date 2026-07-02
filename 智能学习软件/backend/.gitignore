@@ -1,0 +1,35 @@
+# Go
+*.test
+*.out
+*.prof
+coverage.txt
+coverage.html
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build output
+bin/
+dist/
+backend-server
+backend-server.exe
+
+# Env / Secrets
+.env
+.env.local
+*.local.yaml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db

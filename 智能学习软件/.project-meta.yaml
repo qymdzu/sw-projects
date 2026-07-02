@@ -1,5 +1,5 @@
 project_name: "智能学习软件"
-project_type: "backend-only"
+project_type: "fullstack"
 version: "0.1.0"
 created_at: "2026-06-30"
 pipeline_version: "2.x"
