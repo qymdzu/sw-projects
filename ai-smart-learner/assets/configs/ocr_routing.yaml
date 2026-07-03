@@ -1,7 +1,0 @@
-ocr_routing:
-  default: baidu_edu
-  rules:
-    - when: { question_type: "math" }
-      use: baidu_edu
-    - when: { has_handwriting: true }
-      use: baidu_edu
