@@ -13,6 +13,7 @@ import (
 	"smart-learning/internal/middleware"
 	"smart-learning/internal/repository"
 	"smart-learning/internal/service"
+	"smart-learning/pkg/crypto"
 	"smart-learning/pkg/jwt"
 	"smart-learning/pkg/logger"
 )
@@ -27,10 +28,11 @@ type Handlers struct {
 	Report    *handler.ReportHandler
 	Subject   *handler.SubjectHandler
 	Knowledge *handler.KnowledgeHandler
+	Setting   *handler.SettingHandler // Phase B 新增：模型配置
 }
 
 // BuildHandlers 根据 DB 与 cfg 构造所有 handler（共享 JWT 密钥）。
-func BuildHandlers(db *gorm.DB, cfg *config.Config) *Handlers {
+func BuildHandlers(db *gorm.DB, cfg *config.Config) (*Handlers, error) {
 	jwtMgr := jwt.NewManager(cfg.JWT.Secret, cfg.JWT.AccessTokenTTL, cfg.JWT.RefreshTokenTTL)
 
 	userRepo := repository.NewUserRepository(db)
@@ -40,6 +42,7 @@ func BuildHandlers(db *gorm.DB, cfg *config.Config) *Handlers {
 	reportRepo := repository.NewReportRepository(db)
 	subjectRepo := repository.NewSubjectRepository(db)
 	knowledgeRepo := repository.NewKnowledgeRepository(db)
+	settingRepo := repository.NewSettingRepository(db) // Phase B 新增
 
 	authSvc := service.NewAuthService(userRepo, jwtMgr)
 	userSvc := service.NewUserService(userRepo)
@@ -50,6 +53,13 @@ func BuildHandlers(db *gorm.DB, cfg *config.Config) *Handlers {
 	subjectSvc := service.NewSubjectService(subjectRepo)
 	knowledgeSvc := service.NewKnowledgeService(knowledgeRepo)
 
+	// Phase B：模型配置 AES-GCM 密钥（派生自 JWT_SECRET，与签名密钥分离但同源）
+	cipher, err := crypto.NewAESGCM(cfg.JWT.Secret)
+	if err != nil {
+		return nil, nil // 上层 main 应当 panic
+	}
+	settingSvc := service.NewSettingService(settingRepo, cipher) // Phase B 新增
+
 	return &Handlers{
 		Auth:      handler.NewAuthHandler(authSvc),
 		User:      handler.NewUserHandler(userSvc),
@@ -59,7 +69,8 @@ func BuildHandlers(db *gorm.DB, cfg *config.Config) *Handlers {
 		Report:    handler.NewReportHandler(reportSvc),
 		Subject:   handler.NewSubjectHandler(subjectSvc),
 		Knowledge: handler.NewKnowledgeHandler(knowledgeSvc),
-	}
+		Setting:   handler.NewSettingHandler(settingSvc), // Phase B 新增
+	}, nil
 }
 
 // New 构建 *gin.Engine 并注册所有路由。
@@ -74,7 +85,7 @@ func New(cfg *config.Config, h *Handlers) *gin.Engine {
 	r.Use(middleware.RequestID())
 	r.Use(middleware.RequestLogger())
 	r.Use(middleware.Recovery())
-	r.Use(middleware.CORS())
+	r.Use(middleware.CORSWithConfig(&cfg.CORS)) // Phase B P1-02：白名单 CORS
 
 	jwtMgr := jwt.NewManager(cfg.JWT.Secret, cfg.JWT.AccessTokenTTL, cfg.JWT.RefreshTokenTTL)
 
@@ -150,6 +161,15 @@ func New(cfg *config.Config, h *Handlers) *gin.Engine {
 			// 科目 & 知识点
 			api.GET("/subjects", h.Subject.List)
 			api.GET("/knowledge-points", h.Knowledge.Tree)
+
+			// Phase B 新增：模型配置（4 个端点）
+			settings := secured.Group("/settings")
+			{
+				settings.POST("/model", h.Setting.CreateOrUpdate)
+				settings.GET("/model", h.Setting.GetActive)
+				settings.PUT("/model", h.Setting.Update)
+				settings.DELETE("/model", h.Setting.Delete)
+			}
 		}
 	}
 

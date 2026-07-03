@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -17,6 +18,12 @@ type Config struct {
 	Database DatabaseConfig
 	JWT      JWTConfig
 	Logger   LoggerConfig
+	CORS     CORSConfig // Phase B P1-02：CORS 白名单
+}
+
+// CORSConfig 是跨域白名单配置（Phase B P1-02）。
+type CORSConfig struct {
+	AllowOrigins []string
 }
 
 // ServerConfig 是 HTTP 服务配置。
@@ -82,11 +89,44 @@ func Load() (*Config, error) {
 			Level: getEnvStr("LOG_LEVEL", "info"),
 			Env:   getEnvStr("APP_ENV", "dev"),
 		},
+		CORS: CORSConfig{
+			AllowOrigins: parseCSV(getEnvStr("CORS_ALLOW_ORIGINS", "http://localhost:5173,http://localhost:4173")),
+		},
 	}
+	// P1-01：JWT_SECRET 强校验
 	if cfg.JWT.Secret == "" {
 		return nil, fmt.Errorf("JWT_SECRET 不能为空")
 	}
+	if cfg.JWT.Secret == "dev-secret-please-replace-in-production" {
+		// 生产环境禁止使用占位密钥
+		if cfg.Logger.Env == "prod" {
+			return nil, fmt.Errorf("JWT_SECRET 仍为占位密钥，禁止在生产环境使用")
+		}
+		// 非 prod 环境给警告，由调用方决定
+		fmt.Fprintln(os.Stderr, "[WARN] JWT_SECRET 仍为占位密钥，仅适用于 dev/test 环境")
+	}
+	if len(cfg.JWT.Secret) < 32 {
+		if cfg.Logger.Env == "prod" {
+			return nil, fmt.Errorf("JWT_SECRET 长度不足 32 字符，禁止在生产环境使用")
+		}
+		fmt.Fprintf(os.Stderr, "[WARN] JWT_SECRET 长度 %d < 32，建议在生产环境至少 32 字符\n", len(cfg.JWT.Secret))
+	}
 	return cfg, nil
+}
+
+// parseCSV 把 "a,b,c" 解析成 ["a","b","c"]，自动 trim 空白。
+func parseCSV(s string) []string {
+	if s == "" {
+		return nil
+	}
+	parts := strings.Split(s, ",")
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		if t := strings.TrimSpace(p); t != "" {
+			out = append(out, t)
+		}
+	}
+	return out
 }
 
 func getEnvStr(key, def string) string {

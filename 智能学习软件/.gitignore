@@ -30,3 +30,6 @@ __pycache__/
 *.log
 .env
 .env.local
+
+# Pipeline 运行时状态（不提交到代码仓库）
+pipeline/

@@ -1,0 +1,80 @@
+/* Design Tokens — 与 docs/ux/视觉风格指南.md §8.1-§8.5 1:1 对齐 */
+
+:root {
+  /* 主色（智学蓝） */
+  --color-primary: #4F7CFF;
+  --color-primary-hover: #3D6AE5;
+  --color-primary-active: #2D58CC;
+  --color-primary-light: #EBF1FF;
+
+  /* 辅助色 */
+  --color-secondary-orange: #FF9F45;
+  --color-secondary-mint: #36CFC9;
+
+  /* 状态色 */
+  --color-success: #52C41A;
+  --color-warning: #FAAD14;
+  --color-error: #FF4D4F;
+
+  /* 中性色 */
+  --color-text-primary: #1F2937;
+  --color-text-regular: #374151;
+  --color-text-secondary: #6B7280;
+  --color-text-placeholder: #9CA3AF;
+  --color-border: #E5E7EB;
+  --color-border-light: #F3F4F6;
+  --color-bg-page: #F5F7FA;
+  --color-bg-card: #FFFFFF;
+  --color-bg-mask: rgba(0, 0, 0, 0.45);
+
+  /* 间距（4px 基础单位） */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+  /* 字号 */
+  --font-display: 28px;
+  --font-h1: 24px;
+  --font-h2: 20px;
+  --font-h3: 18px;
+  --font-body-lg: 16px;
+  --font-body: 14px;
+  --font-caption: 12px;
+  --font-tiny: 11px;
+
+  /* 行高 */
+  --line-tight: 1.25;
+  --line-normal: 1.5;
+  --line-relaxed: 1.75;
+
+  /* 字重 */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* z-index */
+  --z-dropdown: 1000;
+  --z-modal: 2000;
+  --z-toast: 3000;
+}

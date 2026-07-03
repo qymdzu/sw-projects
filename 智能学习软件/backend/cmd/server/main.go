@@ -53,13 +53,18 @@ func main() {
 		&model.ExerciseRecord{},
 		&model.MistakeBook{},
 		&model.StudyReport{},
+		&model.ModelSetting{}, // Phase B 新增：模型配置表
 	); err != nil {
 		logger.L().Error("automigrate failed", "err", err)
 		log.Fatalf("自动迁移失败: %v", err)
 	}
 	logger.L().Info("automigrate completed")
 
-	handlers := router.BuildHandlers(db, cfg)
+	handlers, err := router.BuildHandlers(db, cfg)
+	if err != nil {
+		logger.L().Error("build handlers failed", "err", err)
+		log.Fatalf("初始化业务处理器失败: %v", err)
+	}
 	engine := router.New(cfg, handlers)
 
 	srv := &http.Server{
@@ -90,8 +95,17 @@ func main() {
 }
 
 // initDB 初始化 PostgreSQL 数据库连接。
+//
+// ⚠️ 安全修复（Phase B · R-05）：原代码把 cfg.Database.Password 打到 stdout，
+// 即使前缀为 "Password=" 也是日志泄露。本版本完全删除密码相关日志，只记录非敏感字段。
 func initDB(cfg *config.Config) (*gorm.DB, error) {
-	fmt.Printf("[DEBUG] cfg.Database: Host=%s Port=%d User=%s Password=%s DBName=%s SSLMode=%s\n", cfg.Database.Host, cfg.Database.Port, cfg.Database.User, cfg.Database.Password, cfg.Database.DBName, cfg.Database.SSLMode)
+	logger.L().Debug("db config loaded",
+		"host", cfg.Database.Host,
+		"port", cfg.Database.Port,
+		"user", cfg.Database.User,
+		"dbname", cfg.Database.DBName,
+		"sslmode", cfg.Database.SSLMode,
+	)
 	dsn := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s TimeZone=Asia/Shanghai",
 		cfg.Database.Host, cfg.Database.Port, cfg.Database.User,
